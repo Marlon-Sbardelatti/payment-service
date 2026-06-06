@@ -2,23 +2,19 @@ package main
 
 import (
 	"log"
-	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/Marlon-Sbardelatti/payment-service/internal/domain/payment"
+	"github.com/Marlon-Sbardelatti/payment-service/internal/infrastructure/database"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	r := gin.Default()
+	godotenv.Load(".env")
 
-	r.GET("/health", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "ok!",
-		})
-
-	})
-
-	if err := r.Run(); err != nil {
-		log.Fatalf("failed to run server: %v", err)
+	db, err := database.NewConnection()
+	if err != nil {
+		log.Fatalf("database connection failed: %v", err)
 	}
 
+	db.AutoMigrate(&payment.Payment{})
 }
